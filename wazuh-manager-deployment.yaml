@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wazuh-manager
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wazuh-manager
+  template:
+    metadata:
+      labels:
+        app: wazuh-manager
+    spec:
+      containers:
+      - name: wazuh-manager
+        image: wazuh/wazuh-manager:4.5.2
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+          requests:
+            cpu: 500m
+            memory: 1Gi
+        ports:
+        - containerPort: 1514
+          name: agent-events
+        - containerPort: 1515
+          name: agent-enrolling
+        - containerPort: 55000
+          name: api
+        volumeMounts:
+        - name: wazuh-manager-data
+          mountPath: /var/ossec/data
+        - name: wazuh-manager-etc
+          mountPath: /var/ossec/etc
+        - name: wazuh-manager-logs
+          mountPath: /var/ossec/logs
+      volumes:
+      - name: wazuh-manager-data
+        persistentVolumeClaim:
+          claimName: wazuh-manager-data
+      - name: wazuh-manager-etc
+        persistentVolumeClaim:
+          claimName: wazuh-manager-etc
+      - name: wazuh-manager-logs
+        persistentVolumeClaim:
+          claimName: wazuh-manager-logs
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wazuh-manager
+  namespace: monitoring
+spec:
+  selector:
+    app: wazuh-manager
+  ports:
+  - port: 1514
+    targetPort: 1514
+    name: agent-events
+  - port: 1515
+    targetPort: 1515
+    name: agent-enrolling
+  - port: 55000
+    targetPort: 55000
+    name: api
+  type: ClusterIP
