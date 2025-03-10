@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wazuh-manager
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wazuh-manager
+  template:
+    metadata:
+      labels:
+        app: wazuh-manager
+    spec:
+      containers:
+      - name: wazuh-manager
+        image: wazuh/wazuh-manager:4.5.2
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+          requests:
+            cpu: 500m
+            memory: 1Gi
+        ports:
+        - containerPort: 1514
+          name: agent-events
+        - containerPort: 1515
+          name: agent-enrolling
+        - containerPort: 55000
+          name: api
+        volumeMounts:
+        - name: wazuh-manager-data
+          mountPath: /var/ossec/data
+        - name: wazuh-manager-etc
+          mountPath: /var/ossec/etc
+        - name: wazuh-manager-logs
+          mountPath: /var/ossec/logs
+      - name: logstash
+        image: docker.elastic.co/logstash/logstash:8.12.0
+        resources:
+          limits:
+            cpu: 500m
+            memory: 1Gi
+          requests:
+            cpu: 200m
+            memory: 512Mi
+        command: ["/usr/share/logstash/bin/logstash"]
+        args: ["-f", "/etc/logstash/conf.d/wazuh-elasticsearch.conf"]
+        volumeMounts:
+        - name: wazuh-manager-logs
+          mountPath: /var/ossec/logs
+        - name: logstash-config
+          mountPath: /etc/logstash/conf.d/wazuh-elasticsearch.conf
+          subPath: wazuh-elasticsearch.conf
+        - name: logstash-config
+          mountPath: /etc/logstash/templates/wazuh.json
+          subPath: wazuh.json
+        - name: elasticsearch-certs
+          mountPath: /etc/logstash/certs/root-ca.pem
+          subPath: root-ca.pem
+      volumes:
+      - name: wazuh-manager-data
+        persistentVolumeClaim:
+          claimName: wazuh-manager-data
+      - name: wazuh-manager-etc
+        persistentVolumeClaim:
+          claimName: wazuh-manager-etc
+      - name: wazuh-manager-logs
+        persistentVolumeClaim:
+          claimName: wazuh-manager-logs
+      - name: logstash-config
+        configMap:
+          name: logstash-config
+      - name: elasticsearch-certs
+        secret:
+          name: elasticsearch-certs
