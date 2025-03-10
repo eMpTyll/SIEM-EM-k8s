@@ -36,6 +36,11 @@ spec:
             secretKeyRef:
               name: elasticsearch-credentials
               key: password
+# Turn off SSL verification
+        - name: ELASTICSEARCH_SSL_VERIFICATIONMODE
+          value: "none"
+        - name: SERVER_SSL_ENABLED
+          value: "false"
         ports:
         - containerPort: 5601
           name: http

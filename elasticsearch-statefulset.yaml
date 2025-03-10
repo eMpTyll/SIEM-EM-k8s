@@ -38,7 +38,12 @@ spec:
         - name: ES_JAVA_OPTS
           value: "-Xms1g -Xmx1g"
         - name: xpack.security.enabled
-          value: "true"
+#        value: "true"
+          value: "false"
+        - name: xpack.security.transport.ssl.enabled
+          value: "false"
+        - name: xpack.security.http.ssl.enabled
+          value: "false"
         - name: ELASTIC_USERNAME
           valueFrom:
             secretKeyRef:
@@ -62,10 +67,10 @@ spec:
       name: elasticsearch-data
     spec:
       accessModes: [ "ReadWriteOnce" ]
-      storageClassName: vsphere-storage
+      storageClassName: local-storage
       resources:
         requests:
-          storage: 30Gi
+          storage: 10Gi
 ---
 apiVersion: v1
 kind: Service

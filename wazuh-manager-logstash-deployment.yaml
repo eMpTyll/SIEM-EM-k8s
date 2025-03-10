@@ -68,9 +68,11 @@ spec:
         - name: logstash-config
           mountPath: /etc/logstash/templates/wazuh.json
           subPath: wazuh.json
-        - name: elasticsearch-certs
-          mountPath: /etc/logstash/certs/root-ca.pem
-          subPath: root-ca.pem
+        # Commented out as we are not using SSL
+        # - name: elasticsearch-certs
+        #   mountPath: /etc/logstash/certs/root-ca.pem
+        #   subPath: root-ca.pem
+
       volumes:
       - name: wazuh-manager-data
         persistentVolumeClaim:
@@ -84,9 +86,11 @@ spec:
       - name: logstash-config
         configMap:
           name: logstash-config
-      - name: elasticsearch-certs
-        secret:
-          secretName: elasticsearch-certs
+      # Commented out as we are not using SSL
+      # - name: elasticsearch-certs
+      #   secret:
+      #     secretName: elasticsearch-certs
+
 ---
 apiVersion: v1
 kind: Service

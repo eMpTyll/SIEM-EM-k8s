@@ -93,10 +93,16 @@ Wait for the Wazuh indexer pod to be in Running state:
 kubectl get pods -n monitoring -l app=wazuh-indexer -w
 ```
 
-Finally, deploy the Wazuh manager:
+Next, create the ConfigMap for Logstash:
 
 ```shellscript
-kubectl apply -f wazuh-manager-deployment.yaml
+kubectl apply -f logstash-config-map.yaml
+```
+
+Finally, deploy the Wazuh manager with Logstash:
+
+```shellscript
+kubectl apply -f wazuh-manager-logstash-deployment.yaml
 ```
 
 ### 8. Deploy Kibana
@@ -137,7 +143,7 @@ All pods should be in the `Running` state.
 
 1. In Kibana, navigate to the Wazuh app (you may need to install it from the Kibana plugin menu)
 2. Configure the connection to the Wazuh manager:
-3. URL: `https://wazuh.yourdomain.com`
+3. URL: `http://wazuh.yourdomain.com`
 4. Port: `55000`
 5. Username: `wazuh`
 6. Password: (the password you set in `wazuh-secret.yaml`)
@@ -146,3 +152,10 @@ All pods should be in the `Running` state.
 
 1. In the Wazuh app in Kibana, go to "Agents" and click "Deploy new agent"
 2. Follow the instructions to deploy agents on your systems
+
+## Important Notes
+
+The current configuration has been optimized for:
+- Running without SSL (all connections are HTTP, not HTTPS)
+- Using Wazuh Manager combined with Logstash in the same pod
+- Using vSphere storage class for all persistent volumes

@@ -18,12 +18,14 @@ data:
     }
     output {
       elasticsearch {
-        hosts => "http://elasticsearch.monitoring.svc.cluster.local:9200"
+#       hosts => "http://elasticsearch.monitoring.svc.cluster.local:9200"
+        hosts => "http://elasticsearch-api:9200"
         index => "wazuh-alerts-4.x-%{+YYYY.MM.dd}"
         user => "${ELASTICSEARCH_USERNAME}"
         password => "${ELASTICSEARCH_PASSWORD}"
-        ssl => true
-        cacert => "/etc/logstash/certs/root-ca.pem"
+#       ssl => true
+#       cacert => "/etc/logstash/certs/root-ca.pem" 
+        ssl => false
         template => "/etc/logstash/templates/wazuh.json"
         template_name => "wazuh"
         template_overwrite => true
