@@ -38,7 +38,7 @@ spec:
         - name: wazuh-manager-logs
           mountPath: /var/ossec/logs
       - name: logstash
-        image: docker.elastic.co/logstash/logstash:8.12.0
+        image: docker.elastic.co/logstash/logstash:8.10.4  # Match Elasticsearch version
         resources:
           limits:
             cpu: 500m
@@ -46,6 +46,17 @@ spec:
           requests:
             cpu: 200m
             memory: 512Mi
+        env:
+        - name: ELASTICSEARCH_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: elasticsearch-credentials
+              key: username
+        - name: ELASTICSEARCH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elasticsearch-credentials
+              key: password
         command: ["/usr/share/logstash/bin/logstash"]
         args: ["-f", "/etc/logstash/conf.d/wazuh-elasticsearch.conf"]
         volumeMounts:
@@ -75,4 +86,25 @@ spec:
           name: logstash-config
       - name: elasticsearch-certs
         secret:
-          name: elasticsearch-certs
+          secretName: elasticsearch-certs
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wazuh-manager
+  namespace: monitoring
+spec:
+  selector:
+    app: wazuh-manager
+  ports:
+  - port: 1514
+    targetPort: 1514
+    name: agent-events
+  - port: 1515
+    targetPort: 1515
+    name: agent-enrolling
+  - port: 55000
+    targetPort: 55000
+    name: api
+  type: ClusterIP
+

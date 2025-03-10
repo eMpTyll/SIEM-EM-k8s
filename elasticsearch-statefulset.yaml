@@ -39,6 +39,11 @@ spec:
           value: "-Xms1g -Xmx1g"
         - name: xpack.security.enabled
           value: "true"
+        - name: ELASTIC_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: elasticsearch-credentials
+              key: username
         - name: ELASTIC_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -90,3 +95,4 @@ spec:
     targetPort: 9200
     name: http
   type: ClusterIP
+

@@ -27,7 +27,10 @@ spec:
         - name: ELASTICSEARCH_HOSTS
           value: http://elasticsearch-api:9200
         - name: ELASTICSEARCH_USERNAME
-          value: elastic
+          valueFrom:
+            secretKeyRef:
+              name: elasticsearch-credentials
+              key: username
         - name: ELASTICSEARCH_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -50,3 +53,4 @@ spec:
     targetPort: 5601
     name: http
   type: ClusterIP
+

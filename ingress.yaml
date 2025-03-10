@@ -5,6 +5,9 @@ metadata:
   namespace: monitoring
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
+# Create SSL redirect
+#    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+
 spec:
   rules:
   - host: kibana.yourdomain.com
