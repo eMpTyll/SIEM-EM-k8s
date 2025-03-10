@@ -1,36 +1,71 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: logstash-config
-  namespace: monitoring
+    name: logstash-config
+    namespace: monitoring
 data:
-  wazuh-elasticsearch.conf: |
+    wazuh-elasticsearch.conf: |
+    # Logstash input configuration
+    # Reads alerts from the Wazuh manager alerts.json file
     input {
-      file {
-        id => "wazuh_alerts"
-        codec => "json"
-        start_position => "beginning"
-        stat_interval => "1 second"
-        path => "/var/ossec/logs/alerts/alerts.json"
-        mode => "tail"
-        ecs_compatibility => "disabled"
-      }
+        file {
+            id => "wazuh_alerts"
+            codec => "json"
+            start_position => "beginning"
+            stat_interval => "1 second"
+            path => "/var/ossec/logs/alerts/alerts.json"
+            mode => "tail"
+            ecs_compatibility => "disabled"
+        }
     }
+    
+    # Logstash output configuration
+    # Sends processed alerts to Elasticsearch
     output {
-      elasticsearch {
-#       hosts => "http://elasticsearch.monitoring.svc.cluster.local:9200"
-        hosts => "http://elasticsearch-api:9200"
-        index => "wazuh-alerts-4.x-%{+YYYY.MM.dd}"
-        user => "${ELASTICSEARCH_USERNAME}"
-        password => "${ELASTICSEARCH_PASSWORD}"
-#       ssl => true
-#       cacert => "/etc/logstash/certs/root-ca.pem" 
-        ssl => false
-        template => "/etc/logstash/templates/wazuh.json"
-        template_name => "wazuh"
-        template_overwrite => true
-      }
+        elasticsearch {
+            # Use the Elasticsearch API service endpoint defined in Kubernetes
+            hosts => "http://elasticsearch-api:9200"
+            index => "wazuh-alerts-4.x-%{+YYYY.MM.dd}"
+            user => "${ELASTICSEARCH_USERNAME}"
+            password => "${ELASTICSEARCH_PASSWORD}"
+            
+            # SSL configuration
+            # In production environments, it's recommended to enable SSL:
+            # ssl => true
+            # cacert => "/etc/logstash/certs/root-ca.pem"
+            
+            # For our environment, we're temporarily disabling SSL
+            ssl => false
+            
+            # Using the Wazuh template for proper indexing
+            template => "/etc/logstash/templates/wazuh.json"
+            template_name => "wazuh"
+            template_overwrite => true
+        }
     }
+    
+  # init.sh - Script to install required plugins and set permissions
+  init.sh: |
+    #!/bin/bash
+    
+    # Install the Elasticsearch output plugin if not already installed
+    /usr/share/logstash/bin/logstash-plugin list | grep -q logstash-output-elasticsearch || \
+      /usr/share/logstash/bin/logstash-plugin install logstash-output-elasticsearch
+    
+    # Ensure permissions for the logstash user to read Wazuh alerts
+    # In Kubernetes we run as root, but this would be useful when running with another user
+    # usermod -a -G wazuh logstash
+    
+    # Ensure the template directory exists
+    mkdir -p /etc/logstash/templates
+    
+    # Set proper permissions for certificate if using SSL
+    # if [ -f /etc/logstash/certs/root-ca.pem ]; then
+    #   chmod 755 /etc/logstash/certs/root-ca.pem
+    # fi
+    
+    echo "Logstash initialization complete"
+    
   wazuh.json: |
     {
         "index_patterns": "wazuh-*",
