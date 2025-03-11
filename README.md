@@ -16,10 +16,10 @@ This repository contains Kubernetes manifests for deploying a complete monitorin
 - Wazuh Indexer: Cung cấp khả năng đánh index bổ sung cho dữ liệu Wazuh
 
 ## Phiên bản và tương thích
-- Elasticsearch/Kibana/Logstash: 7.17.12
-- Wazuh và Wazuh Indexer: 4.5.2
+- Elasticsearch/Kibana/Logstash: 8.12.2
+- Wazuh và Wazuh Indexer: 4.7.3
 
-**Lưu ý về tương thích:** Cấu hình đã được tối ưu hóa để sử dụng Wazuh 4.5.2 với Elasticsearch 7.17.12 để đảm bảo tính tương thích tốt nhất. Phiên bản Elasticsearch 7.x được khuyến nghị sử dụng với Wazuh 4.5.x.
+**Lưu ý về tương thích:** Cấu hình đã được tối ưu hóa để sử dụng Wazuh 4.7.3 với Elasticsearch 8.12.2 để đảm bảo tính tương thích tốt nhất. Phiên bản Elasticsearch 8.x được khuyến nghị sử dụng với Wazuh 4.5.x.
 
 ## Tích hợp Wazuh với Elasticsearch thông qua Logstash
 
@@ -355,7 +355,7 @@ Quy trình nâng cấp chi tiết sẽ phụ thuộc vào phiên bản hiện t�
 
 Hệ thống Wazuh, Elasticsearch, và Kibana được cấu hình trong repository này cung cấp một giải pháp mạnh mẽ cho giám sát bảo mật. Các điểm quan trọng:
 
-- Đã tối ưu hóa tương thích giữa Wazuh 4.5.2 và Elasticsearch 7.17.12
+- Đã tối ưu hóa tương thích giữa Wazuh 4.7.3 và Elasticsearch 8.12.2
 - Đã thống nhất sử dụng vsphere-storage cho tất cả các thành phần
 - Cung cấp quy trình triển khai chi tiết và hướng dẫn cấu hình
 - Tích hợp Logstash để chuyển tiếp dữ liệu từ Wazuh đến Elasticsearch theo khuyến nghị chính thức
