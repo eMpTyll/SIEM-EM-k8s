@@ -45,28 +45,28 @@ data:
     }
     
   # init.sh - Script to install required plugins and set permissions
-  init.sh: |
-    #!/bin/bash
+    init.sh: |
+        #!/bin/bash
     
-    # Install the Elasticsearch output plugin if not already installed
-    /usr/share/logstash/bin/logstash-plugin list | grep -q logstash-output-elasticsearch || \
-      /usr/share/logstash/bin/logstash-plugin install logstash-output-elasticsearch
+        # Install the Elasticsearch output plugin if not already installed
+        /usr/share/logstash/bin/logstash-plugin list | grep -q logstash-output-elasticsearch || \
+        /usr/share/logstash/bin/logstash-plugin install logstash-output-elasticsearch
+        
+        # Ensure permissions for the logstash user to read Wazuh alerts
+        # In Kubernetes we run as root, but this would be useful when running with another user
+        # usermod -a -G wazuh logstash
+        
+        # Ensure the template directory exists
+        mkdir -p /etc/logstash/templates
+        
+        # Set proper permissions for certificate if using SSL
+        # if [ -f /etc/logstash/certs/root-ca.pem ]; then
+        #   chmod 755 /etc/logstash/certs/root-ca.pem
+        # fi
+        
+        echo "Logstash initialization complete"
     
-    # Ensure permissions for the logstash user to read Wazuh alerts
-    # In Kubernetes we run as root, but this would be useful when running with another user
-    # usermod -a -G wazuh logstash
-    
-    # Ensure the template directory exists
-    mkdir -p /etc/logstash/templates
-    
-    # Set proper permissions for certificate if using SSL
-    # if [ -f /etc/logstash/certs/root-ca.pem ]; then
-    #   chmod 755 /etc/logstash/certs/root-ca.pem
-    # fi
-    
-    echo "Logstash initialization complete"
-    
-  wazuh.json: |
+    wazuh.json: |
     {
         "index_patterns": "wazuh-*",
         "template": {
