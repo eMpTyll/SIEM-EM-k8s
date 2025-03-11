@@ -162,16 +162,6 @@ kubectl get pods -n monitoring -l app=kibana -w
 kubectl apply -f ingress.yaml
 ```
 
-## Post-Deployment Configuration
-
-### Verify all components are running
-
-```shellscript
-kubectl get pods -n monitoring
-```
-All pods should be in the `Running` state.
-
-
 ### 10. Change hosts file
 
 1. Get IP of Ingress Controller
