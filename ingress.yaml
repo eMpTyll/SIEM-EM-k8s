@@ -10,7 +10,7 @@ metadata:
 
 spec:
   rules:
-  - host: kibana.yourdomain.com
+  - host: kibanacypeace.com
     http:
       paths:
       - path: /
@@ -20,7 +20,7 @@ spec:
             name: kibana
             port:
               number: 5601
-  - host: wazuh.yourdomain.com
+  - host: wazuhcypeace.com
     http:
       paths:
       - path: /

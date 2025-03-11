@@ -171,6 +171,44 @@ kubectl get pods -n monitoring
 ```
 All pods should be in the `Running` state.
 
+
+### 10. Change hosts file
+
+1. Get IP of Ingress Controller
+
+```shellscript
+kubectl get svc -n ingress-nginx
+```
+
+Find ingress-nginx-controller and note value of EXTERNAL-IP. If dont have EXTERNAL-IP (In case of local deployment), use node IP:
+
+```shellscript
+kubectl get nodes -o wide
+```
+
+Note the node IP (Ex: 192.168.1.100)
+
+2. Config the hosts file
+
+```shellscript
+sudo nano /etc/hosts
+```
+
+Add the following line in the end of file:
+
+```shellscript
+192.168.1.100 kibanacypeace.com
+```
+
+## Post-Deployment Configuration
+
+### Verify all components are running
+
+```shellscript
+kubectl get pods -n monitoring
+```
+All pods should be in the `Running` state.
+
 ### Verify Logstash is processing Wazuh alerts
 
 Kiểm tra logs của container Logstash để đảm bảo nó đang xử lý dữ liệu từ Wazuh:
