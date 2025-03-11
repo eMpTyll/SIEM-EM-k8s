@@ -16,7 +16,7 @@ spec:
       # Khởi tạo container để cài đặt plugin và chuẩn bị môi trường
       initContainers:
       - name: logstash-init
-        image: docker.elastic.co/logstash/logstash:7.17.12
+        image: docker.elastic.co/logstash/logstash:8.12.2
         command: ["/bin/bash", "/opt/logstash-init/init.sh"]
         volumeMounts:
         - name: logstash-init-script
@@ -24,7 +24,7 @@ spec:
           subPath: init.sh
       containers:
       - name: wazuh-manager
-        image: wazuh/wazuh-manager:4.5.2
+        image: wazuh/wazuh-manager:4.7.3
         resources:
           limits:
             cpu: 1000m
@@ -47,7 +47,7 @@ spec:
         - name: wazuh-manager-logs
           mountPath: /var/ossec/logs
       - name: logstash
-        image: docker.elastic.co/logstash/logstash:7.17.12  # Match Elasticsearch version
+        image: docker.elastic.co/logstash/logstash:8.12.2  # Match Elasticsearch version
         resources:
           limits:
             cpu: 500m
